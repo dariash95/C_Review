@@ -1,0 +1,16 @@
+*.metadata
+*.pdf
+*.cproject
+*.project
+*.xml
+*/.settings/*
+*/Debug/*
+*.mxproject
+*.ioc
+*.ld
+*.s
+*.txt
+*/Drivers/*
+CTOOLS/*
+*.launch
+
