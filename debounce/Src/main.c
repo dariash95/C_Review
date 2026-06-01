@@ -20,45 +20,58 @@
 #include <stdint.h>
 
 // Mock function for system time
-uint32_t get_system_time_ms(void);
+uint32_t get_system_time_ms(void){
+
+}
 
 // Mock function to read the physical pin
-bool read_gpio_pin(void);
+bool read_gpio_pin(void){
 
-typedef struct {
-    bool last_pin_state;
-    uint32_t last_stable_time;
-    bool is_debounced;
+}
+
+typedef struct
+{
+    bool sampled_state;
+    bool stable_state;
+    uint32_t last_change_time;
 } ButtonState;
 
-bool is_button_pressed(ButtonState *btn) {
+void button_init(ButtonState *btn){
+
+	bool first_sample = read_gpio_pin();
+	bool first_stable = first_sample;
+	uint32_t first_timestamp = get_system_time_ms();
+
+	btn->sampled_state = first_sample;
+	btn->stable_state = first_stable;
+	btn->last_change_time = first_timestamp;
+
+}
+
+bool button_is_pressed(ButtonState *btn) {
 
 	// 1. Read current pin state
 	bool current_state = read_gpio_pin();
 	uint32_t current_timestamp = get_system_time_ms();
 
-	// 2. Check if the pin state changed (the button "bounced")
-	if (current_state != btn->last_pin_state){
+	if (current_state != btn->sampled_state){
 		// 3. If it changed, reset your timer.
-		btn->last_stable_time = get_system_time_ms();
-		btn->last_pin_state = current_state;
+		btn->last_change_time = current_timestamp;
+		btn->sampled_state = current_state;
 		// Still de-bouncing
-		return false;
 	}
 
-	// Not else-if just in case the user is holding the button
-	if (current_timestamp - btn->last_stable_time > 50){
-		if ((current_state == false) && (!btn->is_debounced)){
-			btn->is_debounced = true;
-			return true;
-			// pressed and de-bounced
+	if (current_timestamp - btn->last_change_time > 50){
+		// We made sure the last sampled became stable
+
+		if (btn->stable_state != btn->sampled_state)
+		{
+		    btn->stable_state = btn->sampled_state;
 		}
-
-		// The false would be that the button is already debounce, but the user keeps pressing it
 	}
 
-	if (current_state == true) {
-	        btn->is_debounced = false;
+	if (btn->stable_state == false){
+		return true;
 	}
 
     return false;
@@ -66,12 +79,23 @@ bool is_button_pressed(ButtonState *btn) {
 
 int main (void){
 
-	ButtonState button_state = {
-			.last_pin_state = true,
-			.last_stable_time = 0,
-			.is_debounced = false,
-	};
+	ButtonState button;
 
-	is_button_pressed(&button_state);
+	button_init(&button);
+
+    while (1)
+    {
+        if (button_is_pressed(&button))
+        {
+            // Button is stably pressed
+        }
+
+        // Other tasks
+    }
+
+
+
+
+	return 0;
 
 }
