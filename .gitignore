@@ -14,7 +14,7 @@
 CTOOLS/*
 *.launch
 
-FreeRTOS/FreeRTOS_LED_Toggle/include/README
-FreeRTOS/FreeRTOS_LED_Toggle/lib/README
-FreeRTOS/FreeRTOS_LED_Toggle/test/README
-FreeRTOS/FreeRTOS_LED_Toggle/.vscode/extensions.json
+FreeRTOS/*/include/README
+FreeRTOS/*/lib/README
+FreeRTOS/*/test/README
+FreeRTOS/*/.vscode/extensions.json
